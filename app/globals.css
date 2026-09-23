@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/* Tokens mirror DESIGN.md (Linear base + Redline overrides). Change them there first. */
+@theme {
+  --color-canvas: #010102;
+  --color-surface-1: #0f1011;
+  --color-surface-2: #141516;
+  --color-surface-3: #18191a;
+  --color-surface-4: #191a1b;
+  --color-hairline: #23252a;
+  --color-hairline-strong: #34343a;
+  --color-hairline-tertiary: #3e3e44;
+
+  --color-ink: #f7f8f8;
+  --color-ink-muted: #d0d6e0;
+  --color-ink-subtle: #8a8f98;
+  --color-ink-tertiary: #62666d;
+
+  --color-primary: #1fd5e0;
+  --color-primary-hover: #5ee7ef;
+  --color-primary-focus: #19b8c2;
+  --color-on-primary: #010102;
+  --color-primary-subtle: rgb(31 213 224 / 0.1);
+
+  --color-gain: #27a644;
+  --color-loss: #e5484d;
+  --color-caution: #f5a524;
+  --color-gain-subtle: rgb(39 166 68 / 0.1);
+  --color-loss-subtle: rgb(229 72 77 / 0.1);
+  --color-caution-subtle: rgb(245 165 36 / 0.1);
+
+  --font-sans: var(--font-geist-sans), -apple-system, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --text-display-xl: 80px;
+  --text-display-xl--line-height: 1.05;
+  --text-display-xl--letter-spacing: -3px;
+  --text-display-lg: 56px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -1.8px;
+  --text-display-md: 40px;
+  --text-display-md--line-height: 1.15;
+  --text-display-md--letter-spacing: -1px;
+  --text-headline: 28px;
+  --text-headline--line-height: 1.2;
+  --text-headline--letter-spacing: -0.6px;
+  --text-card-title: 22px;
+  --text-card-title--line-height: 1.25;
+  --text-card-title--letter-spacing: -0.4px;
+  --text-subhead: 20px;
+  --text-subhead--line-height: 1.4;
+  --text-subhead--letter-spacing: -0.2px;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.5;
+  --text-body: 16px;
+  --text-body--line-height: 1.5;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
+  --text-caption: 12px;
+  --text-caption--line-height: 1.4;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--color-canvas);
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: rgb(31 213 224 / 0.3);
+  }
+  :focus-visible {
+    outline: 2px solid rgb(25 184 194 / 0.5);
+    outline-offset: 2px;
+  }
+}
+
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+@utility panel {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "redline",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "^1",
+    "@modelcontextprotocol/sdk": "^1",
+    "@phosphor-icons/react": "^2",
+    "ai": "^5",
+    "class-variance-authority": "^0.7",
+    "clsx": "^2",
+    "cmdk": "^1",
+    "geist": "^1",
+    "motion": "^12",
+    "next": "16.3.6",
+    "radix-ui": "^1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "recharts": "^3",
+    "tailwind-merge": "^3",
+    "undici": "^8.11.0",
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "tailwindcss": "^4",
+    "tsx": "^4",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@10.29.2"
+}
