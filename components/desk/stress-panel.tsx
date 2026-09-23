@@ -57,7 +57,7 @@ export function StressPanel({ result, gaps, intent }: { result: StressResult; ga
           <p className="mt-1 max-w-[75ch] text-caption text-ink-subtle">
             Your horizon includes about <span className="num text-ink-muted">{gaps.closedHoursInHorizon}h</span> of closed US market
             {gaps.weekendsInHorizon > 0 && <> and <span className="num text-ink-muted">{gaps.weekendsInHorizon}</span> weekend{gaps.weekendsInHorizon > 1 ? "s" : ""}</>}.
-            The Bitget rToken keeps trading through it, on thinner liquidity, so news that lands overnight hits your position before the stock reopens.
+            The Bitget stock perp keeps trading through it, on thinner liquidity, so news that lands overnight hits your position before the stock reopens.
           </p>
           <dl className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div><dt className="text-caption text-ink-tertiary">Overnight gap p95</dt><dd className="num text-body-sm">{plainPct(gaps.overnight.p95)}</dd></div>

@@ -1,9 +1,9 @@
 import { gapRisk, runAnalogs } from "@/lib/analogs";
 import { debateTurn, judge, jury, parseIntent } from "@/lib/debate";
 import { pct } from "@/lib/quant";
-import { checkRules, runStress } from "@/lib/stress";
+import { checkRules, earningsRisk, runStress } from "@/lib/stress";
 import { perpSnapshot } from "@/lib/tools/bitget";
-import { argsFor, callTool, findTool } from "@/lib/tools/mcp";
+import { bitgetData } from "@/lib/tools/bitget-data";
 import { dailyHistory } from "@/lib/tools/yahoo";
 import type { DebateTurn, Evidence, PerpSnapshot, RedlineEvent, RuleProfile, TradeIntent } from "@/lib/types";
 
@@ -30,27 +30,6 @@ async function optional<T>(emit: Emit, id: string, label: string, fn: () => Prom
   }
 }
 
-async function mcpContext(symbol: string): Promise<{ label: string; text: string }[]> {
-  const wanted: { label: string; groups: string[][] }[] = [
-    { label: "News", groups: [["news"]] },
-    { label: "Earnings calendar", groups: [["earning"], ["calendar", "date", "upcoming"]] },
-    { label: "Analyst price targets", groups: [["analyst", "price target", "target"]] },
-    { label: "Insider trades", groups: [["insider"]] },
-    { label: "Valuation", groups: [["valuation", "ratio", "metric"]] },
-  ];
-  const out: { label: string; text: string }[] = [];
-  await Promise.all(
-    wanted.map(async (w) => {
-      const tool = await findTool(...w.groups);
-      if (!tool) return;
-      const text = await callTool(tool.name, argsFor(tool, { symbol, limit: 8 })).catch(() => "");
-      if (text) out.push({ label: `${w.label} (${tool.name})`, text: text.slice(0, 1800) });
-    }),
-  );
-  if (out.length === 0) throw new Error("No usable tools returned data");
-  return out;
-}
-
 export async function runRedline(input: { text: string; profile: RuleProfile; intent?: TradeIntent }, emit: Emit): Promise<void> {
   const started = Date.now();
   const runId = crypto.randomUUID();
@@ -58,15 +37,17 @@ export async function runRedline(input: { text: string; profile: RuleProfile; in
   const intent = input.intent ?? (await step(emit, "parse", "Parsing trade idea", () => parseIntent(input.text), (i) => `${i.side} ${i.symbol} ${i.leverage}x, $${i.notionalUsd.toLocaleString()}, ${i.horizonDays}d`));
   emit({ type: "intent", intent });
 
-  const [hist, qqq, btc, perp, mcp] = await Promise.all([
+  const [hist, qqq, btc, perp, fund] = await Promise.all([
     step(emit, "history", `Loading 5y ${intent.symbol} price history`, () => dailyHistory(intent.symbol), (h) => `${h.bars.length} daily bars`),
     step(emit, "qqq", "Loading Nasdaq (QQQ) history", () => dailyHistory("QQQ"), (h) => `${h.bars.length} bars`),
     step(emit, "btc", "Loading BTC history", () => dailyHistory("BTC-USD"), (h) => `${h.bars.length} bars`),
-    optional<PerpSnapshot | null>(emit, "perp", `Bitget ${intent.symbol} rToken perp: price, funding, depth`, () => perpSnapshot(intent.symbol), (p) =>
+    optional<PerpSnapshot | null>(emit, "perp", `Bitget ${intent.symbol} stock perp: price, funding, depth`, () => perpSnapshot(intent.symbol), (p) =>
       p ? `${p.symbol} ${p.lastPrice} | funding ${p.fundingRate != null ? (p.fundingRate * 100).toFixed(4) + "%" : "n/a"}` : "No Bitget perp listed for this ticker",
     ),
-    optional(emit, "mcp", "Bitget market data MCP: news, earnings, analysts, insiders", () => mcpContext(intent.symbol), (r) => r.map((x) => x.label.split(" (")[0]).join(", ")),
+    optional(emit, "mcp", "Bitget market data MCP: earnings, analysts, insiders, sentiment", () => bitgetData(intent.symbol), (d) => d.sources.join(", ")),
   ]);
+  if (fund) emit({ type: "fundamentals", data: fund });
+  const earnings = earningsRisk(hist.bars, fund?.earnings ?? null, intent);
 
   const entry = perp?.lastPrice ?? hist.lastPrice;
   emit({
@@ -83,10 +64,10 @@ export async function runRedline(input: { text: string; profile: RuleProfile; in
   const gaps = gapRisk(hist.bars, intent);
   emit({ type: "gaps", result: gaps });
 
-  const stress = await step(emit, "stress", "Running stress scenarios", async () => runStress(intent, entry, hist.bars, qqq.bars, btc.bars, gaps, perp?.fundingRate ?? null), (s) => `${s.rows.filter((r) => r.liquidated).length} liquidations, ${s.rows.filter((r) => r.stopTriggered).length} stop-outs`);
+  const stress = await step(emit, "stress", "Running stress scenarios", async () => runStress(intent, entry, hist.bars, qqq.bars, btc.bars, gaps, perp?.fundingRate ?? null, earnings), (s) => `${s.rows.filter((r) => r.liquidated).length} liquidations, ${s.rows.filter((r) => r.stopTriggered).length} stop-outs`);
   emit({ type: "stress", result: stress });
 
-  const violations = checkRules(intent, input.profile, gaps, analogs.quantiles.p5);
+  const violations = checkRules(intent, input.profile, gaps, analogs.quantiles.p5, earnings);
   emit({ type: "step", id: "rules", label: "Checking your personal rules", status: "done", detail: violations.length ? `${violations.length} flagged` : "All clear" });
   emit({ type: "rules", violations });
 
@@ -95,7 +76,19 @@ export async function runRedline(input: { text: string; profile: RuleProfile; in
   add(perp ? "Bitget" : "Yahoo", "Entry price", `${entry.toFixed(2)}`);
   if (perp?.fundingRate != null) add("Bitget", "Funding rate (8h)", `${(perp.fundingRate * 100).toFixed(4)}%`);
   if (perp?.spreadBps != null) add("Bitget", "Order book", `spread ${perp.spreadBps.toFixed(1)} bps, top-50 depth bid $${Math.round(perp.bidDepthUsd ?? 0).toLocaleString()} / ask $${Math.round(perp.askDepthUsd ?? 0).toLocaleString()}`);
-  if (perp?.change24hPct != null) add("Bitget", "rToken 24h change", `${perp.change24hPct.toFixed(2)}%`);
+  if (perp?.change24hPct != null) add("Bitget", "Perp 24h change", `${perp.change24hPct.toFixed(2)}%`);
+  if (earnings?.nextDate)
+    add("Bitget MCP", "Next earnings", `${earnings.nextDate}${earnings.nextIsEstimate ? " (estimated from report cadence, not yet announced)" : ""} - ${earnings.daysUntil}d away, ${earnings.timing}${earnings.inHorizon ? " - INSIDE your horizon" : " - outside your horizon"}`);
+  if (earnings && earnings.sample >= 3)
+    add("Bitget MCP + history", "Past earnings reactions", `${earnings.sample} reports: median |move| ${(earnings.absMoveP50 * 100).toFixed(1)}%, p90 ${(earnings.absMoveP90 * 100).toFixed(1)}%, worst against your side ${(earnings.worstAdverse * 100).toFixed(1)}%`);
+  const a = fund?.analysts;
+  if (a && a.count90d > 0)
+    add("Bitget MCP", "Analysts (90d)", `${a.count90d} actions: ${a.buy} buy / ${a.hold} hold / ${a.sell} sell${a.meanTarget ? `; mean target ${a.meanTarget.toFixed(0)} (${pct(a.meanTarget / entry - 1)} vs entry), range ${a.lowTarget?.toFixed(0)}-${a.highTarget?.toFixed(0)}` : ""}`);
+  const v = fund?.valuation;
+  if (v?.peTtm != null) add("Bitget MCP", "Valuation", `P/E ttm ${v.peTtm.toFixed(1)}, P/S ttm ${v.psTtm?.toFixed(1) ?? "n/a"}, P/B ${v.pbMrq?.toFixed(1) ?? "n/a"}`);
+  if (fund?.insiders) add("Bitget MCP", "Insider filings (90d)", fund.insiders.filings90d ? `${fund.insiders.filings90d} filings, latest ${fund.insiders.latest.map((x) => `${x.name} ${x.date}`).join("; ")}` : "none");
+  const s = fund?.sentiment;
+  if (s) add("Bitget MCP", "Fear & Greed", `US stocks ${s.usScore.toFixed(0)} (${s.usRating}${s.usWeekAgo != null ? `, ${s.usWeekAgo.toFixed(0)} a week ago` : ""})${s.cryptoScore != null ? `; crypto ${s.cryptoScore} (${s.cryptoRating})` : ""}`);
   add("Analogs", "Similar setups found", `${analogs.sampleSize} over ${analogs.lookbackYears}y`);
   add("Analogs", "Return on margin distribution", `p5 ${pct(analogs.quantiles.p5)}, median ${pct(analogs.quantiles.p50)}, p95 ${pct(analogs.quantiles.p95)}`);
   add("Analogs", "Win rate / expectancy", `${(analogs.winRate * 100).toFixed(0)}% / ${pct(analogs.expectancyPct)} on margin`);
@@ -112,7 +105,6 @@ export async function runRedline(input: { text: string; profile: RuleProfile; in
   for (const r of stress.rows) add("Stress", r.name, `${pct(r.underlyingMovePct)} underlying -> ${pct(r.pnlOnMarginPct, 0)} on margin ($${r.pnlUsd.toFixed(0)})${r.liquidated ? " LIQUIDATED" : r.stopTriggered ? " stopped out" : ""}`);
   add("Stress", "Funding drag", `$${stress.fundingCostUsd.toFixed(2)} over horizon${stress.fundingIsEstimate ? " (estimated at 0.01%/8h)" : ""}`);
   for (const v of violations) add("Rules", `${v.severity === "block" ? "BROKEN" : "Warning"}: ${v.rule}`, v.detail);
-  for (const m of mcp ?? []) add("Bitget MCP", m.label, m.text.replace(/\s+/g, " ").slice(0, 600));
   emit({ type: "evidence", evidence });
 
   const turns: DebateTurn[] = [];

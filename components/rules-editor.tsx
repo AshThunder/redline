@@ -11,7 +11,7 @@ const FIELDS: { key: keyof Omit<RuleProfile, "custom">; label: string; help: str
   { key: "maxRiskPerTradePct", label: "Max risk per trade", help: "Loss at your stop, as a share of the account.", suffix: "%", step: 0.5 },
   { key: "maxLeverage", label: "Max leverage", help: "Hard ceiling on any position.", suffix: "x", step: 1 },
   { key: "maxLeverageIntoEvent", label: "Max leverage into events", help: "Earnings, CPI, FOMC and other scheduled catalysts.", suffix: "x", step: 1 },
-  { key: "maxWeekendLeverage", label: "Max leverage over weekends", help: "The rToken trades while NYSE is shut. Weekend news hits first.", suffix: "x", step: 1 },
+  { key: "maxWeekendLeverage", label: "Max leverage over weekends", help: "The Bitget stock perp trades while NYSE is shut. Weekend news hits first.", suffix: "x", step: 1 },
 ];
 
 export function RulesEditor() {

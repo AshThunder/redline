@@ -27,7 +27,7 @@ export function MarketStrip({ state }: { state: RedlineState }) {
         <div className="min-w-0">
           <div className="flex items-baseline gap-2">
             <h2 className="text-card-title font-semibold">{intent.symbol}</h2>
-            <span className="text-caption text-ink-tertiary">{perp ? perp.symbol : "rToken perp"}</span>
+            <span className="text-caption text-ink-tertiary">{perp ? perp.symbol : "Stock perp"}</span>
           </div>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="num text-body-lg text-ink">{market ? price(market.price) : "…"}</span>

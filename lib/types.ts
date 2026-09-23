@@ -1,4 +1,7 @@
 import { z } from "zod";
+import type { BitgetData } from "@/lib/tools/bitget-data";
+
+export type { BitgetData };
 
 export const TradeIntentSchema = z.object({
   symbol: z.string().describe("Underlying US ticker, uppercase, e.g. NVDA"),
@@ -75,7 +78,21 @@ export type StressRow = {
   stopTriggered: boolean;
 };
 
+export type EarningsRisk = {
+  nextDate: string | null;
+  daysUntil: number | null;
+  nextIsEstimate: boolean;
+  inHorizon: boolean;
+  timing: "after-close" | "pre-market" | "unknown";
+  sample: number;
+  absMoveP50: number;
+  absMoveP90: number;
+  worstAdverse: number;
+  reactions: { date: string; move: number }[];
+};
+
 export type StressResult = {
+  earnings: EarningsRisk | null;
   betaQqq: number;
   betaBtc: number;
   marginUsd: number;
@@ -134,6 +151,7 @@ export type RedlineEvent =
   | { type: "step"; id: string; label: string; status: TraceStatus; detail?: string; ms?: number }
   | { type: "intent"; intent: TradeIntent }
   | { type: "market"; price: number; source: string; perp: PerpSnapshot | null; series: { t: number; c: number }[] }
+  | { type: "fundamentals"; data: BitgetData }
   | { type: "evidence"; evidence: Evidence[] }
   | { type: "analogs"; result: AnalogResult }
   | { type: "gaps"; result: GapRisk }

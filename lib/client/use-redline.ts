@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import type {
   AnalogResult,
+  BitgetData,
   DebateTurn,
   Evidence,
   GapRisk,
@@ -25,6 +26,7 @@ export type RedlineState = {
   steps: TraceStep[];
   intent?: TradeIntent;
   market?: { price: number; source: string; perp: PerpSnapshot | null; series: { t: number; c: number }[] };
+  fundamentals?: BitgetData;
   evidence: Evidence[];
   analogs?: AnalogResult;
   gaps?: GapRisk;
@@ -53,6 +55,8 @@ function reduce(s: RedlineState, e: RedlineEvent): RedlineState {
       return { ...s, intent: e.intent };
     case "market":
       return { ...s, market: { price: e.price, source: e.source, perp: e.perp, series: e.series } };
+    case "fundamentals":
+      return { ...s, fundamentals: e.data };
     case "evidence":
       return { ...s, evidence: e.evidence };
     case "analogs":
