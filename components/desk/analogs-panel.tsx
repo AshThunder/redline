@@ -73,8 +73,8 @@ export function AnalogsPanel({ result, intent }: { result: AnalogResult; intent:
                 <ReferenceLine y={0} stroke="#34343a" />
                 {intent.stopPct != null && <ReferenceLine y={-intent.stopPct * intent.leverage} stroke="#f5a524" strokeDasharray="3 3" />}
                 <ReferenceLine y={-100} stroke="#e5484d" strokeDasharray="3 3" />
-                {result.paths.map((_, i) => (
-                  <Line key={i} dataKey={`p${i}`} stroke="#8a8f98" strokeOpacity={0.22} strokeWidth={1} dot={false} isAnimationActive={false} />
+                {result.paths.map((p, i) => (
+                  <Line key={i} dataKey={`p${i}`} stroke={(p[p.length - 1] ?? 0) >= 0 ? "#27a644" : "#e5484d"} strokeOpacity={0.35} strokeWidth={1} dot={false} isAnimationActive={false} />
                 ))}
                 <Line dataKey="median" stroke="#1fd5e0" strokeWidth={2} dot={false} isAnimationActive />
               </LineChart>

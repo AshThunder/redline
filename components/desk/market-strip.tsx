@@ -60,6 +60,80 @@ export function MarketStrip({ state }: { state: RedlineState }) {
           </div>
         ))}
       </dl>
+      <IntelRow state={state} />
     </section>
+  );
+}
+
+function IntelRow({ state }: { state: RedlineState }) {
+  const f = state.fundamentals;
+  const e = state.stress?.earnings;
+  const entry = state.market?.price;
+  if (!f) return null;
+  const a = f.analysts;
+  const s = f.sentiment;
+  const rated = a ? a.buy + a.hold + a.sell : 0;
+
+  return (
+    <div className="col-span-full flex flex-wrap items-stretch border-t border-hairline bg-surface-2/50">
+      <span className="flex items-center gap-1.5 px-4 py-2.5 text-caption text-ink-tertiary">
+        <span className="size-1.5 rounded-full bg-primary" />
+        Bitget market data
+      </span>
+      {f.earnings?.next && (
+        <Intel label="Next earnings" tone={e?.inHorizon ? "text-caution" : undefined}>
+          {f.earnings.next}
+          {f.earnings.nextIsEstimate && <span className="text-ink-tertiary"> est.</span>}
+          <span className="text-ink-tertiary"> · {f.earnings.daysUntil}d</span>
+          {e?.inHorizon && <span className="ml-1.5 rounded-sm bg-caution-subtle px-1 text-caution">in horizon</span>}
+        </Intel>
+      )}
+      {e && e.sample >= 3 && (
+        <Intel label={`Earnings move p90 (${e.sample} reports)`}>±{(e.absMoveP90 * 100).toFixed(1)}%</Intel>
+      )}
+      {a?.meanTarget != null && entry != null && (
+        <Intel label={`Analyst target (${a.count90d} in 90d)`}>
+          {price(a.meanTarget)} <span className={cn(a.meanTarget >= entry ? "text-gain" : "text-loss")}>{signedPct(a.meanTarget / entry - 1)}</span>
+        </Intel>
+      )}
+      {rated > 0 && a && (
+        <Intel label="Ratings buy / hold / sell">
+          <span className="flex items-center gap-2">
+            <span className="flex h-1.5 w-16 overflow-hidden rounded-full bg-surface-3">
+              <span className="bg-gain" style={{ width: `${(a.buy / rated) * 100}%` }} />
+              <span className="bg-ink-tertiary" style={{ width: `${(a.hold / rated) * 100}%` }} />
+              <span className="bg-loss" style={{ width: `${(a.sell / rated) * 100}%` }} />
+            </span>
+            {a.buy}/{a.hold}/{a.sell}
+          </span>
+        </Intel>
+      )}
+      {f.valuation?.peTtm != null && <Intel label="P/E ttm">{f.valuation.peTtm.toFixed(1)}</Intel>}
+      {f.insiders && <Intel label="Insider filings 90d">{f.insiders.filings90d}</Intel>}
+      {s && (
+        <Intel label="Fear & Greed US / crypto">
+          <span className={fgTone(s.usScore)}>{s.usScore.toFixed(0)}</span>
+          {s.cryptoScore != null && (
+            <>
+              <span className="text-ink-tertiary"> / </span>
+              <span className={fgTone(s.cryptoScore)}>{s.cryptoScore}</span>
+            </>
+          )}
+        </Intel>
+      )}
+    </div>
+  );
+}
+
+function fgTone(score: number) {
+  return score < 40 ? "text-loss" : score > 60 ? "text-gain" : "text-ink";
+}
+
+function Intel({ label, tone, children }: { label: string; tone?: string; children: React.ReactNode }) {
+  return (
+    <div className="border-l border-hairline px-4 py-2.5">
+      <div className="text-caption text-ink-tertiary">{label}</div>
+      <div className={cn("num mt-0.5 flex items-center text-body-sm text-ink", tone)}>{children}</div>
+    </div>
   );
 }

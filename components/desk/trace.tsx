@@ -40,7 +40,7 @@ export function Trace({ steps, running, elapsedMs }: { steps: TraceStep[]; runni
                 {s.ms != null && <span className="num shrink-0 text-caption text-ink-tertiary">{s.ms < 1000 ? `${s.ms}ms` : `${(s.ms / 1000).toFixed(1)}s`}</span>}
               </div>
               {s.detail && (
-                <p className={cn("mt-0.5 line-clamp-2 text-caption", s.status === "error" ? "text-caution" : "text-ink-subtle")}>{s.detail}</p>
+                <p title={s.detail} className={cn("mt-0.5 line-clamp-2 text-caption", s.status === "error" ? "text-caution" : "text-ink-subtle")}>{s.detail}</p>
               )}
             </div>
           </motion.li>
