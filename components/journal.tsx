@@ -13,7 +13,7 @@ export function Journal() {
 
   return (
     <div className="mx-auto max-w-[1100px] px-5 py-8">
-      <h1 className="text-headline font-semibold">Journal</h1>
+      <h1 className="text-headline font-medium">Journal</h1>
       <p className="mt-1 text-body-sm text-ink-subtle">Every redlined trade and what you decided. Outcomes are scored against the verdict once the horizon ends.</p>
 
       {entries.length === 0 ? (
@@ -21,7 +21,7 @@ export function Journal() {
           <BookOpen size={20} className="text-ink-tertiary" />
           <p className="mt-3 text-body-sm text-ink">No trades logged yet</p>
           <p className="mt-1 max-w-sm text-caption text-ink-subtle">Redline a trade on the desk, then log it as taken or skipped. It shows up here with its verdict.</p>
-          <Button asChild variant="primary" size="md" className="mt-5">
+          <Button asChild variant="primary" size="lg" className="mt-5">
             <Link href="/desk">Open the desk</Link>
           </Button>
         </div>
@@ -42,7 +42,7 @@ export function Journal() {
                 <tr key={e.id} className="hover:bg-surface-2/60">
                   <td className="num px-4 py-3 text-caption text-ink-subtle">{new Date(e.at).toLocaleString()}</td>
                   <td className="px-4 py-3">
-                    <Link href={`/desk?q=${encodeURIComponent(e.query)}`} className="text-ink hover:text-primary">
+                    <Link href={`/desk?q=${encodeURIComponent(e.query)}`} className="text-ink hover:text-accent-ink">
                       {e.intent.side === "long" ? "Long" : "Short"} {e.intent.symbol} {e.intent.leverage}x
                     </Link>
                     <p className="num text-caption text-ink-tertiary">{usd(e.intent.notionalUsd)} · {e.intent.horizonDays}d</p>

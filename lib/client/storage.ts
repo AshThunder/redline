@@ -63,3 +63,20 @@ export function useProfile() {
 export function useJournal() {
   return useStored<JournalEntry[]>("redline.journal", EMPTY_JOURNAL);
 }
+
+export type Theme = "day" | "night";
+
+/** Keep in sync with the pre-paint script in app/layout.tsx, which applies the stored theme before hydration. */
+export const THEME_KEY = "redline.theme";
+
+export function useTheme() {
+  const [theme, setStored] = useStored<Theme>(THEME_KEY, "day");
+  const set = useCallback(
+    (t: Theme) => {
+      document.documentElement.dataset.theme = t;
+      setStored(t);
+    },
+    [setStored],
+  );
+  return [theme, set] as const;
+}

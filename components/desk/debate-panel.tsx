@@ -41,7 +41,7 @@ export function DebatePanel({ turns, evidence, running }: { turns: DebateTurn[];
                       {p.evidenceIds.length > 0 && (
                         <span className="ml-1.5 inline-flex flex-wrap gap-1 align-middle">
                           {p.evidenceIds.map((id) => (
-                            <span key={id} title={byId.get(id) ? `${byId.get(id)!.label}: ${byId.get(id)!.value}` : id} className="num cursor-help rounded-xs border border-hairline px-1 text-[10px] text-ink-tertiary hover:border-primary/40 hover:text-primary">
+                            <span key={id} title={byId.get(id) ? `${byId.get(id)!.label}: ${byId.get(id)!.value}` : id} className="num cursor-help rounded-xs border border-hairline px-1 text-[10px] text-ink-tertiary hover:border-accent-ink/40 hover:text-accent-ink">
                               {id}
                             </span>
                           ))}

@@ -62,7 +62,7 @@ export function Desk() {
   if (!active) {
     return (
       <div className="mx-auto flex min-h-[calc(100dvh-56px)] max-w-3xl flex-col justify-center px-5 pb-24">
-        <h1 className="text-display-md font-semibold text-ink">What are you about to trade?</h1>
+        <h1 className="text-display-md font-medium text-ink">What are you about to trade?</h1>
         <p className="mt-3 max-w-[60ch] text-body text-ink-subtle">
           Describe it the way you would to a friend. Redline replays it through five years of similar setups, stress-tests it, and has a bull, a bear and a risk officer argue about it before you commit.
         </p>

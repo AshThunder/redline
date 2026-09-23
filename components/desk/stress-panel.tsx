@@ -26,10 +26,10 @@ export function StressPanel({ result, gaps, intent }: { result: StressResult; ga
           <thead className="bg-surface-2 text-caption text-ink-tertiary">
             <tr>
               <th className="px-3 py-2 text-left font-normal">Scenario</th>
-              <th className="px-3 py-2 text-right font-normal">{intent.symbol} move</th>
-              <th className="px-3 py-2 text-right font-normal">P&amp;L</th>
-              <th className="px-3 py-2 text-right font-normal">On margin</th>
-              <th className="px-3 py-2 text-right font-normal">Outcome</th>
+              <th className="whitespace-nowrap px-3 py-2 text-right font-normal">{intent.symbol} move</th>
+              <th className="whitespace-nowrap px-3 py-2 text-right font-normal">P&amp;L</th>
+              <th className="whitespace-nowrap px-3 py-2 text-right font-normal">On margin</th>
+              <th className="whitespace-nowrap px-3 py-2 text-right font-normal">Outcome</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-hairline">
@@ -39,10 +39,10 @@ export function StressPanel({ result, gaps, intent }: { result: StressResult; ga
                   <p className="text-ink">{r.name}</p>
                   <p className="text-caption text-ink-tertiary">{r.description}</p>
                 </td>
-                <td className="num px-3 py-2.5 text-right text-ink-muted">{signedPct(r.underlyingMovePct)}</td>
-                <td className={cn("num px-3 py-2.5 text-right", r.pnlUsd >= 0 ? "text-gain" : "text-loss")}>{usd(r.pnlUsd, { signed: true })}</td>
-                <td className={cn("num px-3 py-2.5 text-right", r.pnlOnMarginPct >= 0 ? "text-gain" : "text-loss")}>{signedPct(r.pnlOnMarginPct, 0)}</td>
-                <td className="px-3 py-2.5 text-right text-caption">
+                <td className="num whitespace-nowrap px-3 py-2.5 text-right text-ink-muted">{signedPct(r.underlyingMovePct)}</td>
+                <td className={cn("num whitespace-nowrap px-3 py-2.5 text-right", r.pnlUsd >= 0 ? "text-gain" : "text-loss")}>{usd(r.pnlUsd, { signed: true })}</td>
+                <td className={cn("num whitespace-nowrap px-3 py-2.5 text-right", r.pnlOnMarginPct >= 0 ? "text-gain" : "text-loss")}>{signedPct(r.pnlOnMarginPct, 0)}</td>
+                <td className="whitespace-nowrap px-3 py-2.5 text-right text-caption">
                   {r.liquidated ? <span className="text-loss">Liquidated</span> : r.stopTriggered ? <span className="text-caution">Stopped out</span> : <span className="text-ink-subtle">Survives</span>}
                 </td>
               </tr>

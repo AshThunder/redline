@@ -22,7 +22,7 @@ export function RulesEditor() {
 
   return (
     <div className="mx-auto max-w-[760px] px-5 py-8">
-      <h1 className="text-headline font-semibold">Your rules</h1>
+      <h1 className="text-headline font-medium">Your rules</h1>
       <p className="mt-1 text-body-sm text-ink-subtle">Redline checks every trade against these before the debate starts, and the Risk Officer argues from them. Stored in this browser only.</p>
 
       <div className="panel mt-6 divide-y divide-hairline">

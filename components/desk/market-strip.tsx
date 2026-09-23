@@ -26,7 +26,7 @@ export function MarketStrip({ state }: { state: RedlineState }) {
       <div className="flex items-center gap-4 border-b border-hairline p-4 md:border-b-0 md:border-r">
         <div className="min-w-0">
           <div className="flex items-baseline gap-2">
-            <h2 className="text-card-title font-semibold">{intent.symbol}</h2>
+            <h2 className="text-card-title font-medium">{intent.symbol}</h2>
             <span className="text-caption text-ink-tertiary">{perp ? perp.symbol : "Stock perp"}</span>
           </div>
           <div className="mt-1 flex items-baseline gap-2">
@@ -41,12 +41,12 @@ export function MarketStrip({ state }: { state: RedlineState }) {
               <AreaChart data={series} margin={{ top: 2, bottom: 2, left: 0, right: 0 }}>
                 <defs>
                   <linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#1fd5e0" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#1fd5e0" stopOpacity={0} />
+                    <stop offset="0%" stopColor="var(--color-accent-ink)" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="var(--color-accent-ink)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <YAxis hide domain={["dataMin", "dataMax"]} />
-                <Area type="monotone" dataKey="c" stroke="#1fd5e0" strokeWidth={1.25} fill="url(#spark)" isAnimationActive={false} />
+                <Area type="monotone" dataKey="c" stroke="var(--color-accent-ink)" strokeWidth={1.25} fill="url(#spark)" isAnimationActive={false} />
               </AreaChart>
             </ResponsiveContainer>
           )}
@@ -77,7 +77,7 @@ function IntelRow({ state }: { state: RedlineState }) {
   return (
     <div className="col-span-full flex flex-wrap items-stretch border-t border-hairline bg-surface-2/50">
       <span className="flex items-center gap-1.5 px-4 py-2.5 text-caption text-ink-tertiary">
-        <span className="size-1.5 rounded-full bg-primary" />
+        <span className="size-1.5 rounded-full bg-accent-ink" />
         Bitget market data
       </span>
       {f.earnings?.next && (

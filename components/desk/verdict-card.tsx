@@ -57,7 +57,7 @@ export function VerdictCard({
       </header>
 
       <div className="px-5 pt-5">
-        <h2 className="text-headline font-semibold text-ink">{verdict.headline}</h2>
+        <h2 className="text-headline font-medium text-ink">{verdict.headline}</h2>
         <p className="mt-2 max-w-[70ch] text-body-sm text-ink-muted">{verdict.summary}</p>
       </div>
 
@@ -75,7 +75,7 @@ export function VerdictCard({
               </div>
               <p className="mt-2 text-caption leading-relaxed text-ink-subtle">{d.mechanism}</p>
               <div className="mt-3 flex items-start gap-2 border-t border-hairline pt-3 text-caption text-ink-muted">
-                <BellRinging size={14} className="mt-px shrink-0 text-primary" />
+                <BellRinging size={14} className="mt-px shrink-0 text-accent-ink" />
                 <span>{d.tripwire.description}</span>
               </div>
               {d.evidenceIds.length > 0 && <p className="num mt-2 text-[11px] text-ink-tertiary">{d.evidenceIds.join(" ")}</p>}
@@ -93,7 +93,7 @@ export function VerdictCard({
               {c.changed && (
                 <>
                   <ArrowRight size={12} className="text-ink-tertiary" />
-                  <span className="text-primary">{c.to}</span>
+                  <span className="text-accent-ink">{c.to}</span>
                 </>
               )}
             </p>

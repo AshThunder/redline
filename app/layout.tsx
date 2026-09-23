@@ -8,9 +8,14 @@ export const metadata: Metadata = {
   description: "An AI trading desk for Bitget tokenized US stocks. Historical analogs, stress tests, and a bull, bear and risk-officer debate before you place the order.",
 };
 
+const THEME_SCRIPT = `try{var t=JSON.parse(localStorage.getItem("redline.theme"));if(t==="night"||t==="day")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" data-theme="day" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ReferenceLine, Res
 import type { AnalogResult, TradeIntent } from "@/lib/types";
 import { cn, plainPct, signedPct } from "@/lib/format";
 
-const AXIS = { stroke: "#62666d", fontSize: 11, fontFamily: "var(--font-mono)" };
+const AXIS = { stroke: "var(--color-ink-tertiary)", fontSize: 11, fontFamily: "var(--font-mono)" };
 
 export function AnalogsPanel({ result, intent }: { result: AnalogResult; intent: TradeIntent }) {
   const pathData = useMemo(() => {
@@ -62,21 +62,21 @@ export function AnalogsPanel({ result, intent }: { result: AnalogResult; intent:
         <figure className="rounded-md border border-hairline bg-surface-2 p-3">
           <figcaption className="mb-2 flex items-center justify-between text-caption text-ink-subtle">
             <span>Counterfactual replay: {result.paths.length} equity paths</span>
-            <span className="flex items-center gap-1.5"><span className="h-px w-4 bg-primary" />median</span>
+            <span className="flex items-center gap-1.5"><span className="h-px w-4 bg-accent-ink" />median</span>
           </figcaption>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={pathData} margin={{ top: 4, right: 8, bottom: 0, left: -12 }}>
-                <CartesianGrid stroke="#23252a" vertical={false} />
+                <CartesianGrid stroke="var(--color-hairline)" vertical={false} />
                 <XAxis dataKey="d" tick={AXIS} tickLine={false} axisLine={false} tickFormatter={(d) => `d${d}`} />
                 <YAxis tick={AXIS} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} />
-                <ReferenceLine y={0} stroke="#34343a" />
-                {intent.stopPct != null && <ReferenceLine y={-intent.stopPct * intent.leverage} stroke="#f5a524" strokeDasharray="3 3" />}
-                <ReferenceLine y={-100} stroke="#e5484d" strokeDasharray="3 3" />
+                <ReferenceLine y={0} stroke="var(--color-hairline-strong)" />
+                {intent.stopPct != null && <ReferenceLine y={-intent.stopPct * intent.leverage} stroke="var(--color-caution)" strokeDasharray="3 3" />}
+                <ReferenceLine y={-100} stroke="var(--color-loss)" strokeDasharray="3 3" />
                 {result.paths.map((p, i) => (
-                  <Line key={i} dataKey={`p${i}`} stroke={(p[p.length - 1] ?? 0) >= 0 ? "#27a644" : "#e5484d"} strokeOpacity={0.35} strokeWidth={1} dot={false} isAnimationActive={false} />
+                  <Line key={i} dataKey={`p${i}`} stroke={(p[p.length - 1] ?? 0) >= 0 ? "var(--color-gain)" : "var(--color-loss)"} strokeOpacity={0.35} strokeWidth={1} dot={false} isAnimationActive={false} />
                 ))}
-                <Line dataKey="median" stroke="#1fd5e0" strokeWidth={2} dot={false} isAnimationActive />
+                <Line dataKey="median" stroke="var(--color-accent-ink)" strokeWidth={2} dot={false} isAnimationActive />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -87,18 +87,18 @@ export function AnalogsPanel({ result, intent }: { result: AnalogResult; intent:
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={hist.bins} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
-                <CartesianGrid stroke="#23252a" vertical={false} />
+                <CartesianGrid stroke="var(--color-hairline)" vertical={false} />
                 <XAxis dataKey="x" tick={AXIS} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} />
                 <YAxis tick={AXIS} tickLine={false} axisLine={false} allowDecimals={false} />
                 <Tooltip
-                  cursor={{ fill: "rgb(255 255 255 / 0.03)" }}
-                  contentStyle={{ background: "#18191a", border: "1px solid #34343a", borderRadius: 8, fontSize: 12 }}
+                  cursor={{ fill: "var(--color-surface-3)", fillOpacity: 0.5 }}
+                  contentStyle={{ background: "var(--color-surface-1)", border: "1px solid var(--color-hairline-strong)", color: "var(--color-ink)", borderRadius: 8, fontSize: 12 }}
                   labelFormatter={(v) => `${v}% to ${Number(v) + hist.step}%`}
                   formatter={(v) => [`${v} analogs`, ""]}
                 />
                 <Bar dataKey="n" radius={[3, 3, 0, 0]}>
                   {hist.bins.map((b) => (
-                    <Cell key={b.x} fill={b.x + hist.step <= 0 ? "#e5484d" : b.x >= 0 ? "#27a644" : "#62666d"} fillOpacity={0.75} />
+                    <Cell key={b.x} fill={b.x + hist.step <= 0 ? "var(--color-loss)" : b.x >= 0 ? "var(--color-gain)" : "var(--color-ink-tertiary)"} fillOpacity={0.75} />
                   ))}
                 </Bar>
               </BarChart>

@@ -6,7 +6,7 @@ import type { TraceStep } from "@/lib/client/use-redline";
 import { cn } from "@/lib/format";
 
 const ICON = {
-  running: <CircleNotch size={14} className="animate-spin text-primary" />,
+  running: <CircleNotch size={14} className="animate-spin text-accent-ink" />,
   done: <CheckCircle size={14} weight="fill" className="text-ink-subtle" />,
   error: <WarningCircle size={14} weight="fill" className="text-caution" />,
   skipped: <MinusCircle size={14} className="text-ink-tertiary" />,

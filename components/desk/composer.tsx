@@ -70,7 +70,7 @@ export function Composer({
             Stop
           </Button>
         ) : (
-          <Button variant="primary" size="md" onClick={submit} disabled={!text.trim()}>
+          <Button variant="ai" size="md" onClick={submit} disabled={!text.trim()}>
             Redline it
             <ArrowUp size={14} weight="bold" />
           </Button>
