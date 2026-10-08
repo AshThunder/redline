@@ -209,7 +209,7 @@ Colour is never the only signal: verdicts carry an icon and a word, P&L carries 
 
 **Trace step**: status icon (spinner in `accent-ink`, check in `gain`, warning in `caution`), label in `ink` 14px, detail in `ink-subtle` 12px clamped to two lines with the full text on hover, duration right-aligned in mono `ink-tertiary`.
 
-**Verdict card**: panel with its border tinted by the verdict colour at 25%. Header strip in `*-subtle` with icon + verdict word (600) in the verdict colour, then confidence and jury agreement in mono. Headline 28/500, summary `ink-muted` 14px, 70ch. Three death-mode tiles (`surface-2`, 8px), each with probability in its colour, mechanism, a tripwire row with the bell in `accent-ink`, and evidence IDs in micro mono. Below, a hairline-separated strip of changes: old value struck through in `ink-tertiary`, arrow, new value in `accent-ink`. Footer: "You make the call" line, then Skip / Log as taken.
+**Verdict card**: panel with its border tinted by the verdict colour at 25%. Header strip in `*-subtle` with icon + verdict word (600) in the verdict colour, then confidence and jury agreement in mono. Headline 28/500, summary `ink-muted` 14px, 70ch. Three death-mode tiles (`surface-2`, 8px), each with probability in its colour, mechanism, a tripwire row with the bell in `accent-ink`, and evidence IDs in micro mono. Below, a hairline-separated strip of changes: old value struck through in `ink-tertiary`, arrow, new value in `accent-ink`. Footer: "You make the call" line, then Skip trade / Take and watch, then Share and Post. A ledger hash links to the ledger.
 
 **Stat tile**: `surface-2`, caption label, mono value 14px, coloured only when the value is signed.
 

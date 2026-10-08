@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Redline
 
-## Getting Started
+Redline your trade before the market does.
 
-First, run the development server:
+Type a Bitget stock-perp idea in plain English. Redline pulls the live market, replays historical analogues, stress-tests the ticket, and a Judge writes the pre-mortem: **Kill**, **Resize**, or **Proceed**, plus three ways the trade dies. The human places the order.
+
+Live desk: [redlinebh.vercel.app](https://redlinebh.vercel.app)
+
+## What you can open
+
+| Route | What it is |
+| --- | --- |
+| `/` | Landing page and a published Micron verdict |
+| `/desk` | One trade: analogues, shocks, Bull / Bear / Risk, then the Judge |
+| `/watchtower` | Tripwires on a verdict you chose to watch |
+| `/portfolio` | Shocks across a book of positions |
+| `/ledger` | Append-only hash chain of verdicts |
+| `/journal` | Decisions you logged on this browser |
+| `/rules` | Account rules the stress test enforces |
+| `/s/[token]` | A public share card for one verdict |
+
+Share and Post sit on the verdict. Post opens an X draft. A journal entry links to its card.
+
+## Run it
+
+Requires [pnpm](https://pnpm.io).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Put an API key in `LLM_API_KEY`. The language step is any OpenAI-compatible chat model. `.env.example` points `LLM_BASE_URL` and `LLM_MODEL` at the Bitget hackathon gateway. Prices, analogue search, stress math, and the account-risk check stay outside the model.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Optional: `HTTPS_PROXY` and `BITGET_PIN_IPS` if your network cannot reach Bitget, `TELEGRAM_BOT_TOKEN` for Watchtower texts, and `LEDGER_GITHUB_REPO` to mirror the ledger.
 
-## Learn More
+## Agents
 
-To learn more about Next.js, take a look at the following resources:
+From the repo root:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm redline-mcp
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+That stdio server exposes `redline_trade` (one sentence) and `redline_book` (a list of positions). A deployed desk serves the same tools at `POST /api/mcp`. See [skills/redline/SKILL.md](skills/redline/SKILL.md).
 
-## Deploy on Vercel
+## Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js, Bitget REST, Bitget MCP, and an OpenAI-compatible chat model.
