@@ -47,6 +47,9 @@ next-env.d.ts
 # local checks, not part of the product
 /bench
 
+# local design notes
+DESIGN.md
+
 # python
 __pycache__/
 *.py[cod]
