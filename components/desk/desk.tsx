@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { WarningCircle } from "@phosphor-icons/react";
+import { VerdictPoster } from "@/components/landing/verdict-poster";
+import { MU_SHARE_TOKEN } from "@/lib/landing/mu-case";
 import { Composer } from "@/components/desk/composer";
 import { Trace } from "@/components/desk/trace";
 import { MarketStrip } from "@/components/desk/market-strip";
@@ -14,6 +18,8 @@ import { EvidencePanel, RulesPanel } from "@/components/desk/evidence-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRedline } from "@/lib/client/use-redline";
 import { useJournal, useProfile } from "@/lib/client/storage";
+import { useWatchtowerContext } from "@/lib/client/watchtower-context";
+import { armWatches } from "@/lib/watchtower";
 
 export function Desk() {
   const params = useSearchParams();
@@ -21,6 +27,7 @@ export function Desk() {
   const { state, run, reset } = useRedline();
   const [profile] = useProfile();
   const [journal, setJournal] = useJournal();
+  const { arm } = useWatchtowerContext();
   const [now, setNow] = useState(0);
   const lastQ = useRef<string | undefined>(undefined);
 
@@ -57,18 +64,63 @@ export function Desk() {
       },
       ...prev.filter((p) => p.id !== state.runId),
     ]);
+    if (decision === "taken") {
+      arm(
+        armWatches({
+          journalId: state.runId,
+          query: state.query,
+          intent: state.intent,
+          entryPrice: state.market.price,
+          verdict: state.verdict,
+        }),
+      );
+    }
   };
 
   if (!active) {
     return (
-      <div className="mx-auto flex min-h-[calc(100dvh-56px)] max-w-3xl flex-col justify-center px-5 pb-24">
-        <h1 className="text-display-md font-medium text-ink">What are you about to trade?</h1>
-        <p className="mt-3 max-w-[60ch] text-body text-ink-subtle">
-          Describe it the way you would to a friend. Redline replays it through five years of similar setups, stress-tests it, and has a bull, a bear and a risk officer argue about it before you commit.
-        </p>
-        <div className="mt-8">
-          <Composer initial={q} running={false} compact={false} onSubmit={(t) => run(t, profile)} onStop={reset} />
+      <div className="mx-auto flex max-w-[1440px] flex-col px-5 py-6 lg:py-8">
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] lg:gap-10">
+          <div>
+            <h1 className="max-w-[14ch] text-[36px] font-medium leading-[1.12] tracking-[-0.8px] text-ink md:text-display-md">
+              What are you about to trade?
+            </h1>
+            <p className="mt-3 max-w-[46ch] text-body text-ink-muted">
+              Plain English in. Analogues, shocks, and a Judge who writes how the trade dies. You still place the order.
+            </p>
+            <div className="mt-6">
+              <Composer initial={q} running={false} compact={false} onSubmit={(t) => run(t, profile)} onStop={reset} />
+            </div>
+          </div>
+          <aside className="flex flex-col gap-3">
+            <div className="overflow-hidden rounded-xl">
+              <Image
+                src="/marketing/redline-desk.jpg"
+                alt="A dark desk, a blank monitor, and a cream notebook"
+                width={960}
+                height={540}
+                priority
+                className="h-40 w-full object-cover sm:h-48"
+              />
+            </div>
+            <VerdictPoster compact />
+            <p className="px-1 text-caption text-ink-subtle">
+              Micron, 23 Sep.{" "}
+              <Link href={`/s/${MU_SHARE_TOKEN}`} className="text-accent-ink hover:underline">
+                Open the card
+              </Link>
+            </p>
+          </aside>
         </div>
+        <ol className="mt-8 grid gap-px overflow-hidden rounded-xl border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+          {PASSES.map((p) => (
+            <li key={p.n} className="bg-surface-1 px-4 py-4">
+              <p className="num text-caption text-ink-tertiary">{p.n}</p>
+              <p className="mt-1 text-body-sm font-medium text-ink">{p.t}</p>
+              <p className="mt-1 text-caption text-ink-subtle">{p.d}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     );
   }
@@ -96,7 +148,7 @@ export function Desk() {
 
         <div className="min-w-0 space-y-4">
           {state.verdict && state.intent ? (
-            <VerdictCard verdict={state.verdict} jury={state.jury} intent={state.intent} onDecision={decide} decision={logged?.decision} />
+            <VerdictCard verdict={state.verdict} jury={state.jury} intent={state.intent} onDecision={decide} decision={logged?.decision} ledgerHash={state.ledgerHash} />
           ) : (
             running && <VerdictSkeleton />
           )}
@@ -129,6 +181,13 @@ export function Desk() {
     </div>
   );
 }
+
+const PASSES = [
+  { n: "01", t: "You type it", d: "Ticker, side, size, stop, why." },
+  { n: "02", t: "Bitget fills the blanks", d: "Price, funding, depth, the next report." },
+  { n: "03", t: "History replays it", d: "Five years of similar setups and shocks." },
+  { n: "04", t: "A Judge writes how it dies", d: "Kill, resize, or proceed. Then you decide." },
+];
 
 function PanelLoading() {
   return (

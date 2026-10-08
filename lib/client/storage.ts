@@ -2,6 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import { DEFAULT_PROFILE, type RuleProfile, type TradeIntent, type Verdict } from "@/lib/types";
+import type { Watch } from "@/lib/watchtower";
 
 export type JournalEntry = {
   id: string;
@@ -68,6 +69,12 @@ export type Theme = "day" | "night";
 
 /** Keep in sync with the pre-paint script in app/layout.tsx, which applies the stored theme before hydration. */
 export const THEME_KEY = "redline.theme";
+
+const EMPTY_WATCHES: Watch[] = [];
+
+export function useWatches() {
+  return useStored<Watch[]>("redline.watches", EMPTY_WATCHES);
+}
 
 export function useTheme() {
   const [theme, setStored] = useStored<Theme>(THEME_KEY, "day");

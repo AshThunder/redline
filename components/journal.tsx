@@ -5,6 +5,7 @@ import { BookOpen } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { useJournal } from "@/lib/client/storage";
 import { cn, price, usd } from "@/lib/format";
+import { encodeShare, sharePath } from "@/lib/share";
 
 const VERDICT = { kill: "text-loss", resize: "text-caution", proceed: "text-gain" } as const;
 
@@ -14,7 +15,13 @@ export function Journal() {
   return (
     <div className="mx-auto max-w-[1100px] px-5 py-8">
       <h1 className="text-headline font-medium">Journal</h1>
-      <p className="mt-1 text-body-sm text-ink-subtle">Every redlined trade and what you decided. Outcomes are scored against the verdict once the horizon ends.</p>
+      <p className="mt-1 text-body-sm text-ink-subtle">
+        Every redlined trade and what you decided. The public hash of each verdict is on the{" "}
+        <Link href="/ledger" className="text-accent-ink hover:underline">
+          ledger
+        </Link>
+        .
+      </p>
 
       {entries.length === 0 ? (
         <div className="panel mt-8 flex flex-col items-center px-6 py-16 text-center">
@@ -26,8 +33,32 @@ export function Journal() {
           </Button>
         </div>
       ) : (
-        <div className="panel mt-6 overflow-hidden">
-          <table className="w-full text-body-sm">
+        <>
+        <ul className="panel mt-6 divide-y divide-hairline md:hidden">
+          {entries.map((e) => (
+            <li key={e.id} className="px-4 py-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <Link href={`/desk?q=${encodeURIComponent(e.query)}`} className="text-body-sm text-ink hover:text-accent-ink">
+                  {e.intent.side === "long" ? "Long" : "Short"} {e.intent.symbol} {e.intent.leverage}x
+                </Link>
+                <span className={cn("shrink-0 text-body-sm font-medium capitalize", VERDICT[e.verdict.verdict])}>{e.verdict.verdict}</span>
+              </div>
+              <p className="mt-1 text-caption text-ink-subtle">{e.verdict.headline}</p>
+              <p className="num mt-2 text-caption text-ink-tertiary">
+                {usd(e.intent.notionalUsd)} · {e.intent.horizonDays}d · entry {price(e.entryPrice)} · {e.decision}
+              </p>
+              <p className="num mt-1 text-caption text-ink-tertiary">
+                {new Date(e.at).toLocaleString()}
+                {" · "}
+                <Link href={sharePath(encodeShare(e.intent, e.verdict))} className="text-accent-ink hover:underline">
+                  Card
+                </Link>
+              </p>
+            </li>
+          ))}
+        </ul>
+        <div className="panel mt-6 hidden overflow-x-auto md:block">
+          <table className="w-full min-w-[720px] text-body-sm">
             <thead className="bg-surface-2 text-caption text-ink-tertiary">
               <tr>
                 <th className="px-4 py-2 text-left font-normal">When</th>
@@ -52,12 +83,19 @@ export function Journal() {
                     <span className={cn("text-body-sm font-medium capitalize", VERDICT[e.verdict.verdict])}>{e.verdict.verdict}</span>
                     <p className="line-clamp-1 max-w-[42ch] text-caption text-ink-subtle">{e.verdict.headline}</p>
                   </td>
-                  <td className="px-4 py-3 text-caption capitalize text-ink-muted">{e.decision}</td>
+                  <td className="px-4 py-3 text-caption capitalize text-ink-muted">
+                    {e.decision}
+                    {" · "}
+                    <Link href={sharePath(encodeShare(e.intent, e.verdict))} className="text-accent-ink hover:underline">
+                      Card
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );

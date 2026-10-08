@@ -160,7 +160,7 @@ export type RedlineEvent =
   | { type: "debate"; turn: DebateTurn }
   | { type: "verdict"; verdict: Verdict; jury: JuryResult }
   | { type: "error"; message: string }
-  | { type: "done"; id: string; ms: number };
+  | { type: "done"; id: string; ms: number; ledgerHash?: string | null };
 
 export type PerpSnapshot = {
   symbol: string;

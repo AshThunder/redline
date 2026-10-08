@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  outputFileTracingIncludes: {
+    "/opengraph-image": ["./lib/fonts/**/*"],
+    "/s/[token]/opengraph-image": ["./lib/fonts/**/*"],
+  },
 };
 
 export default nextConfig;

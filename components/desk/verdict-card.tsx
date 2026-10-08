@@ -1,9 +1,11 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowRight, BellRinging, Check, Prohibit, Scales, ShareNetwork, X } from "@phosphor-icons/react";
+import Link from "next/link";
+import { ArrowRight, BellRinging, Check, Prohibit, Scales, X } from "@phosphor-icons/react";
 import type { JuryResult, TradeIntent, Verdict } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { VerdictShare } from "@/components/desk/share-button";
 import { cn, usd } from "@/lib/format";
 
 const META = {
@@ -20,12 +22,16 @@ export function VerdictCard({
   intent,
   onDecision,
   decision,
+  ledgerHash,
+  preview = false,
 }: {
   verdict: Verdict;
   jury?: JuryResult;
   intent: TradeIntent;
-  onDecision: (d: "taken" | "skipped") => void;
+  onDecision?: (d: "taken" | "skipped") => void;
   decision?: "taken" | "skipped" | "pending";
+  ledgerHash?: string | null;
+  preview?: boolean;
 }) {
   const reduce = useReducedMotion();
   const m = META[verdict.verdict];
@@ -108,24 +114,34 @@ export function VerdictCard({
         </p>
       )}
 
-      <footer className="flex flex-wrap items-center gap-2 border-t border-hairline px-5 py-3">
-        <p className="mr-auto text-caption text-ink-tertiary">You make the call. Redline never places an order without your confirmation.</p>
-        {decision && decision !== "pending" ? (
-          <span className="text-caption text-ink-subtle">Logged as {decision} in your journal</span>
-        ) : (
-          <>
-            <Button size="sm" variant="tertiary" onClick={() => onDecision("skipped")}>
-              <X size={12} /> Skip trade
-            </Button>
-            <Button size="sm" variant="secondary" onClick={() => onDecision("taken")}>
-              Log as taken
-            </Button>
-          </>
-        )}
-        <Button size="sm" variant="secondary" disabled title="Coming next: shareable Redline card">
-          <ShareNetwork size={12} /> Share
-        </Button>
-      </footer>
+      {!preview && (
+        <footer className="flex flex-wrap items-center gap-2 border-t border-hairline px-5 py-3">
+          <p className="mr-auto text-caption text-ink-tertiary">
+            You make the call. Redline never places an order without your confirmation.
+            {ledgerHash && (
+              <>
+                {" "}
+                <Link href="/ledger" className="text-accent-ink hover:underline">
+                  Hashed on the ledger
+                </Link>
+              </>
+            )}
+          </p>
+          {decision && decision !== "pending" ? (
+            <span className="text-caption text-ink-subtle">Logged as {decision} in your journal</span>
+          ) : (
+            <>
+              <Button size="sm" variant="tertiary" onClick={() => onDecision?.("skipped")}>
+                <X size={12} /> Skip trade
+              </Button>
+              <Button size="sm" variant="secondary" onClick={() => onDecision?.("taken")}>
+                Take and watch
+              </Button>
+            </>
+          )}
+          <VerdictShare intent={intent} verdict={verdict} jury={jury} />
+        </footer>
+      )}
     </motion.section>
   );
 }

@@ -1,4 +1,5 @@
 import { gapRisk, runAnalogs } from "@/lib/analogs";
+import { recordVerdict } from "@/lib/ledger";
 import { debateTurn, judge, jury, parseIntent } from "@/lib/debate";
 import { pct } from "@/lib/quant";
 import { checkRules, earningsRisk, runStress } from "@/lib/stress";
@@ -121,6 +122,27 @@ export async function runRedline(input: { text: string; profile: RuleProfile; in
 
   const verdict = await step(emit, "judge", "Judge is writing the pre-mortem", () => judge(intent, evidence, input.profile, turns), (v) => `${v.verdict.toUpperCase()} (${Math.round(v.confidence * 100)}%)`);
   const juryResult = await optional(emit, "jury", "Jury: two independent re-runs for stability", () => jury(intent, evidence, input.profile, turns, verdict), (j) => `${Math.round(j.stability * 100)}% agreement (${j.votes.join(", ")})`);
-  emit({ type: "verdict", verdict, jury: juryResult ?? { votes: [verdict.verdict], stability: 1 } });
-  emit({ type: "done", id: runId, ms: Date.now() - started });
+  const juryOut = juryResult ?? { votes: [verdict.verdict], stability: 1 };
+  emit({ type: "verdict", verdict, jury: juryOut });
+  let ledgerHash: string | null = null;
+  try {
+    const saved = await recordVerdict({
+      at: new Date().toISOString(),
+      symbol: intent.symbol,
+      side: intent.side,
+      leverage: intent.leverage,
+      notionalUsd: intent.notionalUsd,
+      horizonDays: intent.horizonDays,
+      entryPrice: entry,
+      verdict: verdict.verdict,
+      confidence: verdict.confidence,
+      headline: verdict.headline,
+      suggestedLeverage: verdict.suggestedLeverage,
+      suggestedNotionalUsd: verdict.suggestedNotionalUsd,
+    });
+    ledgerHash = saved.entry.hash;
+  } catch {
+    ledgerHash = null;
+  }
+  emit({ type: "done", id: runId, ms: Date.now() - started, ledgerHash });
 }

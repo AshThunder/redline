@@ -21,8 +21,8 @@ export function StressPanel({ result, gaps, intent }: { result: StressResult; ga
         ))}
       </dl>
 
-      <div className="overflow-hidden rounded-md border border-hairline">
-        <table className="w-full text-body-sm">
+      <div className="overflow-x-auto rounded-md border border-hairline">
+        <table className="w-full min-w-[640px] text-body-sm">
           <thead className="bg-surface-2 text-caption text-ink-tertiary">
             <tr>
               <th className="px-3 py-2 text-left font-normal">Scenario</th>

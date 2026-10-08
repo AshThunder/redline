@@ -39,6 +39,7 @@ export type RedlineState = {
   runId?: string;
   ms?: number;
   startedAt?: number;
+  ledgerHash?: string | null;
 };
 
 const EMPTY: RedlineState = { status: "idle", query: "", steps: [], evidence: [], violations: [], debate: [] };
@@ -74,7 +75,7 @@ function reduce(s: RedlineState, e: RedlineEvent): RedlineState {
     case "error":
       return { ...s, status: "error", error: e.message };
     case "done":
-      return { ...s, status: s.status === "error" ? "error" : "done", runId: e.id, ms: e.ms };
+      return { ...s, status: s.status === "error" ? "error" : "done", runId: e.id, ms: e.ms, ledgerHash: e.ledgerHash };
   }
 }
 

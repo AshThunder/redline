@@ -20,7 +20,7 @@ themes:
     ink-tertiary: "#716e68"
     primary: "#111111"
     primary-hover: "#2a2926"
-    on-primary: "#ffffff"
+  on-primary: "#ffffff"
     accent: "#1fd5e0"
     accent-hover: "#5ee7ef"
     on-accent: "#111111"

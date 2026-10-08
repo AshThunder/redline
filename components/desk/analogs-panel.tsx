@@ -49,7 +49,7 @@ export function AnalogsPanel({ result, intent }: { result: AnalogResult; intent:
         {result.sampleSize} non-overlapping moments in the last {result.lookbackYears} years that looked like today (momentum, volatility, RSI, distance from highs, Nasdaq and BTC trend).
         Each one replays your exact trade: {intent.side} {intent.leverage}x{intent.stopPct != null ? `, ${intent.stopPct}% stop` : ""}, {intent.horizonDays} days. Returns are on margin.
       </p>
-      <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-md border border-hairline bg-hairline lg:grid-cols-6">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-3 lg:grid-cols-6">
         {stats.map((s) => (
           <div key={s.label} className="bg-surface-2 px-3 py-2.5">
             <dt className="text-caption text-ink-tertiary">{s.label}</dt>
@@ -60,13 +60,13 @@ export function AnalogsPanel({ result, intent }: { result: AnalogResult; intent:
 
       <div className="grid gap-4 xl:grid-cols-[3fr_2fr]">
         <figure className="rounded-md border border-hairline bg-surface-2 p-3">
-          <figcaption className="mb-2 flex items-center justify-between text-caption text-ink-subtle">
+          <figcaption className="mb-2 flex flex-wrap items-center justify-between gap-2 text-caption text-ink-subtle">
             <span>Counterfactual replay: {result.paths.length} equity paths</span>
             <span className="flex items-center gap-1.5"><span className="h-px w-4 bg-accent-ink" />median</span>
           </figcaption>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={pathData} margin={{ top: 4, right: 8, bottom: 0, left: -12 }}>
+              <LineChart data={pathData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
                 <CartesianGrid stroke="var(--color-hairline)" vertical={false} />
                 <XAxis dataKey="d" tick={AXIS} tickLine={false} axisLine={false} tickFormatter={(d) => `d${d}`} />
                 <YAxis tick={AXIS} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} />

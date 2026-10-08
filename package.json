@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "redline-mcp": "tsx packages/redline-mcp/index.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^1",

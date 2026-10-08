@@ -52,9 +52,9 @@ export function MarketStrip({ state }: { state: RedlineState }) {
           )}
         </div>
       </div>
-      <dl className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7">
+      <dl className="grid grid-cols-2 gap-px bg-hairline sm:grid-cols-4 lg:grid-cols-7">
         {cells.map((c) => (
-          <div key={c.label} className="border-hairline px-4 py-3 [&:not(:last-child)]:border-r max-lg:border-b">
+          <div key={c.label} className="bg-surface-1 px-4 py-3">
             <dt className="text-caption text-ink-tertiary">{c.label}</dt>
             <dd className={cn("num mt-1 text-body-sm text-ink", c.tone)}>{c.value}</dd>
           </div>
@@ -75,7 +75,7 @@ function IntelRow({ state }: { state: RedlineState }) {
   const rated = a ? a.buy + a.hold + a.sell : 0;
 
   return (
-    <div className="col-span-full flex flex-wrap items-stretch border-t border-hairline bg-surface-2/50">
+    <div className="col-span-full grid grid-cols-2 border-t border-hairline bg-surface-2/50 sm:grid-cols-3 lg:flex lg:flex-wrap">
       <span className="flex items-center gap-1.5 px-4 py-2.5 text-caption text-ink-tertiary">
         <span className="size-1.5 rounded-full bg-accent-ink" />
         Bitget market data
@@ -131,7 +131,7 @@ function fgTone(score: number) {
 
 function Intel({ label, tone, children }: { label: string; tone?: string; children: React.ReactNode }) {
   return (
-    <div className="border-l border-hairline px-4 py-2.5">
+    <div className="border-b border-r border-hairline px-4 py-2.5 lg:border-b-0 lg:border-r-0 lg:border-l">
       <div className="text-caption text-ink-tertiary">{label}</div>
       <div className={cn("num mt-0.5 flex items-center text-body-sm text-ink", tone)}>{children}</div>
     </div>

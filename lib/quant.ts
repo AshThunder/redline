@@ -33,6 +33,28 @@ export function returnsByDay(bars: Bar[]): Map<string, number> {
 }
 
 /** OLS beta of `a` on `b` over the dates they share. */
+/** Pearson correlation of `a` and `b` over the dates they share. */
+export function corr(a: Map<string, number>, b: Map<string, number>, lastN = 252): number {
+  const keys = [...a.keys()].filter((k) => b.has(k)).slice(-lastN);
+  if (keys.length < 30) return 0;
+  const xa = keys.map((k) => a.get(k)!);
+  const xb = keys.map((k) => b.get(k)!);
+  const ma = mean(xa);
+  const mb = mean(xb);
+  let cov = 0;
+  let va = 0;
+  let vb = 0;
+  for (let i = 0; i < keys.length; i++) {
+    const da = xa[i] - ma;
+    const db = xb[i] - mb;
+    cov += da * db;
+    va += da * da;
+    vb += db * db;
+  }
+  const den = Math.sqrt(va * vb);
+  return den === 0 ? 0 : cov / den;
+}
+
 export function beta(a: Map<string, number>, b: Map<string, number>, lastN = 252): number {
   const keys = [...a.keys()].filter((k) => b.has(k)).slice(-lastN);
   if (keys.length < 30) return 1;

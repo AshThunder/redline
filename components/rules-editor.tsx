@@ -27,12 +27,12 @@ export function RulesEditor() {
 
       <div className="panel mt-6 divide-y divide-hairline">
         {FIELDS.map((f) => (
-          <label key={f.key} className="flex items-center gap-6 px-5 py-4">
+          <label key={f.key} className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-6 sm:px-5">
             <span className="flex-1">
               <span className="block text-body-sm text-ink">{f.label}</span>
               <span className="block text-caption text-ink-subtle">{f.help}</span>
             </span>
-            <span className="flex h-9 w-40 items-center rounded-md border border-hairline bg-canvas px-3 focus-within:border-hairline-strong">
+            <span className="flex h-9 w-full shrink-0 items-center rounded-md border border-hairline bg-canvas px-3 focus-within:border-hairline-strong sm:w-40">
               <input
                 type="number"
                 min={0}
@@ -61,7 +61,7 @@ export function RulesEditor() {
           ))}
         </ul>
         <form
-          className="mt-3 flex gap-2"
+          className="mt-3 flex flex-col gap-2 sm:flex-row"
           onSubmit={(e) => {
             e.preventDefault();
             const v = draft.trim();
