@@ -106,4 +106,4 @@ A deployed desk serves those tools over HTTP at `POST /api/mcp`. Instructions fo
 
 ## Stack
 
-Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Bitget REST, Bitget MCP, and an OpenAI-compatible chat model. Verdict cards are rendered with `next/og`. The local ledger is a JSONL hash chain under `ledger/`.
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Bitget REST, Bitget MCP, and a chat model. Verdict cards are rendered with `next/og`. The local ledger is a JSONL hash chain under `ledger/`.
